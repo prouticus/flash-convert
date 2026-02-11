@@ -13,16 +13,22 @@ echo       Done.
 echo.
 
 echo [2/2] Building installer with Inno Setup...
+set "ISCC="
 where iscc >nul 2>nul
-if %errorlevel% neq 0 (
-    echo ERROR: Inno Setup compiler (iscc) not found on PATH.
+if not errorlevel 1 (
+    set "ISCC=iscc"
+) else if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" (
+    set "ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+) else if exist "C:\Program Files\Inno Setup 6\ISCC.exe" (
+    set "ISCC=C:\Program Files\Inno Setup 6\ISCC.exe"
+)
+if not defined ISCC (
+    echo ERROR: Inno Setup compiler not found.
     echo        Install Inno Setup from https://jrsoftware.org/isdownload.php
-    echo        then add its directory to your PATH, or run:
-    echo        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
     pause
     exit /b 1
 )
-iscc installer.iss
+"%ISCC%" installer.iss
 echo.
 
 if exist installer_output\FlashConvert_Setup.exe (
